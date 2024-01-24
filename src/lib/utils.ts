@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { v4 as uuidv4, validate } from 'uuid'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -33,4 +34,17 @@ export function queryInArray(
 export function queryBoolean(value?: string | null, defaultValue: boolean = false): boolean {
   if (!value) return defaultValue
   return value === 'true'
+}
+
+export function filterValidUUIDs(arr: string[]): string[] {
+  const uniqueIDs: string[] = []
+  for (const item of arr) {
+    if (validate(item)) {
+      const uuid = item.toLowerCase()
+      if (!uniqueIDs.includes(uuid)) {
+        uniqueIDs.push(uuid)
+      }
+    }
+  }
+  return uniqueIDs
 }

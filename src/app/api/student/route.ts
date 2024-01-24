@@ -1,6 +1,6 @@
 import { DEFAULT_LIMIT, DEFAULT_PAGE, SORT_DIRECTION } from '@/constants'
 import prisma from '@/lib/prisma'
-import { queryBoolean, queryInArray, queryNumber, queryString } from '@/lib/utils'
+import { filterValidUUIDs, queryBoolean, queryInArray, queryNumber, queryString } from '@/lib/utils'
 import { GetStudent } from '@/types/api/student'
 import { NextRequest } from 'next/server'
 
@@ -198,6 +198,93 @@ export async function GET(req: NextRequest) {
         page,
         total: 0,
       },
+    })
+  }
+}
+
+/**
+ * @swagger
+ * /api/student:
+ *   delete:
+ *     tags:
+ *       - Student
+ *     operationId: deleteStudents
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ids:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               is_force_delete:
+ *                 type: boolean
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             examples:
+ *               Success:
+ *                 value: |
+ *                   {
+ *                     "message": "Success delete {number} students",
+ *                     "data": null
+ *                   }
+ *               Error:
+ *                 value: |
+ *                   {
+ *                     "message": "Failed to delete students",
+ *                     "data": null
+ *                   }
+ */
+export async function DELETE(req: Request) {
+  try {
+    const data = await req.json()
+    const ids = filterValidUUIDs(data?.['ids'] || [])
+    const isForceDelete = data?.['is_force_delete'] || false
+
+    if (ids.length === 0) {
+      return Response.json({
+        message: 'Nothing to delete students',
+        data: null,
+      })
+    }
+
+    let count = 0
+    if (isForceDelete) {
+      const row = await prisma.student.deleteMany({
+        where: {
+          uuid: {
+            in: ids,
+          },
+        },
+      })
+      count = row.count
+    } else {
+      const row = await prisma.student.updateMany({
+        data: {
+          deletedAt: new Date(),
+        },
+        where: {
+          uuid: {
+            in: ids,
+          },
+        },
+      })
+      count = row.count
+    }
+
+    return Response.json({
+      message: `Success delete ${count} students`,
+      data: null,
+    })
+  } catch {
+    return Response.json({
+      message: 'Failed to delete students',
+      data: null,
     })
   }
 }

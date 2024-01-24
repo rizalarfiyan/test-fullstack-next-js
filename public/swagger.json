@@ -139,6 +139,49 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Student"
+        ],
+        "operationId": "deleteStudents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "is_force_delete": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Success": {
+                    "value": "{\n  \"message\": \"Success delete {number} students\",\n  \"data\": null\n}\n"
+                  },
+                  "Error": {
+                    "value": "{\n  \"message\": \"Failed to delete students\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
