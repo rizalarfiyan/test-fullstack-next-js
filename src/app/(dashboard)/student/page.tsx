@@ -14,12 +14,6 @@ export default function Student() {
     setLimit(parseInt(e.target.value))
   }
 
-  const data = useFetch('/student')
-
-  // useEffect(() => {
-  //   console.log(limit)
-  // }, [limit])
-
   return (
     <div className='m-10 p-5 rounded-md bg-white flex flex-col gap-6'>
       <div className='flex items-center justify-between'>

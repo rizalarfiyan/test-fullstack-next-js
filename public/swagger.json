@@ -1,0 +1,147 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Test Full Stack Next.js",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/seeder": {
+      "get": {
+        "tags": [
+          "Seeder"
+        ],
+        "operationId": "executeSeeder",
+        "parameters": [
+          {
+            "name": "long",
+            "in": "query",
+            "required": false,
+            "example": 20,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Success": {
+                    "value": "{\n  \"message\": \"Success create students\",\n  \"data\": null\n}\n"
+                  },
+                  "Error": {
+                    "value": "{\n  \"message\": \"Something when wrong\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/student": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "operationId": "getAllStudents",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "example": 1,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "example": 10,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_order",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "student_id",
+                "name",
+                "university_name"
+              ]
+            }
+          },
+          {
+            "name": "student_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "university_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "is_deleted",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Success": {
+                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": [\n    {\n      \"id\": \"8be9dea9-589f-42ee-b2cb-74deadbb6029\",\n      \"sequence\": 1,\n      \"nim\": \"22.11.5227\",\n      \"name\": \"Muhamad Rizal Arfiyan\",\n      \"university_name\": \"Universitas Amikom Yogyakarta\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 10,\n    \"page\": 1,\n    \"total\": {\n      \"data\": 1,\n      \"page\": 1,\n      \"deleted\": 0\n    }\n  }\n}\n"
+                  },
+                  "Error": {
+                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": [],\n  \"pagination\": {\n    \"limit\": 10,\n    \"page\": 1,\n    \"total\": {\n      \"data\": 0,\n      \"page\": 0,\n      \"deleted\": 0\n    }\n  }\n}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}

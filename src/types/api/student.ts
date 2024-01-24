@@ -1,6 +1,6 @@
 export type GetStudent = {
   id: string
-  increment: number
+  sequence: number
   nim: string
   name: string
   university_name: string

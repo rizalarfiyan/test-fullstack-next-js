@@ -11,22 +11,24 @@ datasource db {
 }
 
 model University {
-  uuid      String    @id @default(uuid())
-  name      String
-  address   String
+  uuid      String    @id @default(uuid()) @db.VarChar(36)
+  name      String    @db.VarChar(64)
+  address   String    @db.VarChar(255)
   Student   Student[]
   createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
 }
 
 model Student {
-  uuid          String     @id @default(uuid())
-  student_id    String
-  name          String
-  phone         String
-  address       String
+  uuid          String     @id @default(uuid()) @db.VarChar(36)
+  student_id    String     @db.VarChar(16)
+  name          String     @db.VarChar(64)
+  phone         String     @db.VarChar(16)
+  address       String     @db.VarChar(255)
+  university_id String     @db.VarChar(36)
+  university    University @relation(fields: [university_id], references: [uuid], onDelete: Cascade)
   createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @default(now())
-  university_id String
-  university    University @relation(fields: [university_id], references: [uuid])
+  updatedAt     DateTime   @default(now()) @updatedAt
+  deletedAt     DateTime?
 }
