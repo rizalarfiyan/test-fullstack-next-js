@@ -26,8 +26,16 @@ export async function GET(req: Request) {
       data: students,
       skipDuplicates: true,
     })
-    return Response.json('Success')
+    return Response.json({
+      code: 201,
+      message: 'Success create students',
+      data: null,
+    })
   } catch (error) {
-    return Response.json(error)
+    return Response.json({
+      code: 500,
+      message: 'Internal Server Error',
+      data: null,
+    })
   }
 }

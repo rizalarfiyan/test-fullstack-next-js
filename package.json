@@ -12,10 +12,18 @@
   "dependencies": {
     "@faker-js/faker": "^8.3.1",
     "@prisma/client": "5.8.1",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@tanstack/react-query": "^5.17.19",
+    "@tanstack/react-table": "^8.11.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "lucide-react": "^0.314.0",
     "next": "14.1.0",
     "prisma": "^5.8.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tailwind-merge": "^2.2.1",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20",
