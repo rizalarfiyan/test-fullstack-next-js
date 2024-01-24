@@ -10,6 +10,8 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.3.1",
+    "@prisma/client": "5.8.1",
     "next": "14.1.0",
     "prisma": "^5.8.1",
     "react": "^18",
