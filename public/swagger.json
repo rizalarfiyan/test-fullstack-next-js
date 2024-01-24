@@ -41,6 +41,48 @@
         }
       }
     },
+    "/api/student/restore": {
+      "post": {
+        "tags": [
+          "Student"
+        ],
+        "operationId": "restoreSoftDeleteStudents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Success": {
+                    "value": "{\n  \"message\": \"Success restore {number} students\",\n  \"data\": null\n}\n"
+                  },
+                  "Error": {
+                    "value": "{\n  \"message\": \"Failed to restore students\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/student": {
       "get": {
         "tags": [
