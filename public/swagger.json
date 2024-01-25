@@ -72,7 +72,28 @@
                 "examples": {
                   "Success": {
                     "value": "{\n  \"message\": \"Success restore {number} students\",\n  \"data\": null\n}\n"
-                  },
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Not Process Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"Nothing to restore students\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
                   "Error": {
                     "value": "{\n  \"message\": \"Failed to restore students\",\n  \"data\": null\n}\n"
                   }
@@ -215,9 +236,112 @@
                 "examples": {
                   "Success": {
                     "value": "{\n  \"message\": \"Success delete {number} students\",\n  \"data\": null\n}\n"
-                  },
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Not Process Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"Nothing to delete students\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
                   "Error": {
                     "value": "{\n  \"message\": \"Failed to delete students\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Student"
+        ],
+        "operationId": "createStudent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "student_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "university_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Success": {
+                    "value": "{\n  \"message\": \"Success create student\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"Name is invalid\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Not Process Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"University not found\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"Failed to create student\",\n  \"data\": null\n}\n"
                   }
                 }
               }

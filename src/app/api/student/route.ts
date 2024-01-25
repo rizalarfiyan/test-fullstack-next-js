@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma'
 import { filterValidUUIDs, queryBoolean, queryInArray, queryNumber, queryString } from '@/lib/utils'
 import { GetStudent } from '@/types/api/student'
 import { NextRequest } from 'next/server'
+import { z } from 'zod'
 
 /**
  * @swagger
@@ -118,6 +119,19 @@ export async function GET(req: NextRequest) {
   try {
     const offset = (page - 1) * limit
 
+    const where = {
+      ...(isDeleted ? { NOT: [{ deletedAt: null }] } : { AND: [{ deletedAt: null }] }),
+      ...(studentId || name || universityName
+        ? {
+            OR: [
+              ...(studentId ? [{ student_id: { contains: studentId } }] : []),
+              ...(name ? [{ name: { contains: name } }] : []),
+              ...(universityName ? [{ university: { name: { contains: universityName } } }] : []),
+            ],
+          }
+        : {}),
+    }
+
     const students = await prisma.student.findMany({
       skip: offset,
       take: limit,
@@ -128,36 +142,14 @@ export async function GET(req: NextRequest) {
             },
           }
         : {}),
-      where: {
-        ...(isDeleted ? { NOT: [{ deletedAt: null }] } : { AND: [{ deletedAt: null }] }),
-        ...(studentId || name || universityName
-          ? {
-              OR: [
-                ...(studentId ? [{ student_id: { contains: studentId } }] : []),
-                ...(name ? [{ name: { contains: name } }] : []),
-                ...(universityName ? [{ university: { name: { contains: universityName } } }] : []),
-              ],
-            }
-          : {}),
-      },
+      where,
       include: {
         university: true,
       },
     })
 
     const totalData = await prisma.student.count({
-      where: {
-        ...(isDeleted ? { NOT: [{ deletedAt: null }] } : { AND: [{ deletedAt: null }] }),
-        ...(studentId || name || universityName
-          ? {
-              OR: [
-                ...(studentId ? [{ student_id: { contains: studentId } }] : []),
-                ...(name ? [{ name: { contains: name } }] : []),
-                ...(universityName ? [{ university: { name: { contains: universityName } } }] : []),
-              ],
-            }
-          : {}),
-      },
+      where,
     })
 
     const totalDeleted = await prisma.student.count({
@@ -168,7 +160,7 @@ export async function GET(req: NextRequest) {
       },
     })
 
-    const mappStudents: GetStudent[] = students.map((student, index) => ({
+    const mapStudents: GetStudent[] = students.map((student, index) => ({
       id: student.uuid,
       sequence: offset + index + 1,
       nim: student.student_id,
@@ -176,29 +168,39 @@ export async function GET(req: NextRequest) {
       university_name: student.university.name,
     }))
 
-    return Response.json({
-      message: 'Success get all students',
-      data: mappStudents,
-      pagination: {
-        limit,
-        page: Number(page),
-        total: {
-          data: totalData,
-          page: Math.ceil(totalData / Number(limit)),
-          deleted: totalDeleted,
+    return Response.json(
+      {
+        message: 'Success get all students',
+        data: mapStudents,
+        pagination: {
+          limit,
+          page: Number(page),
+          total: {
+            data: totalData,
+            page: Math.ceil(totalData / Number(limit)),
+            deleted: totalDeleted,
+          },
         },
       },
-    })
+      {
+        status: 200,
+      }
+    )
   } catch {
-    return Response.json({
-      message: 'Success get all students',
-      data: [],
-      pagination: {
-        limit,
-        page,
-        total: 0,
+    return Response.json(
+      {
+        message: 'Success get all students',
+        data: [],
+        pagination: {
+          limit,
+          page,
+          total: 0,
+        },
       },
-    })
+      {
+        status: 200,
+      }
+    )
   }
 }
 
@@ -233,6 +235,22 @@ export async function GET(req: NextRequest) {
  *                     "message": "Success delete {number} students",
  *                     "data": null
  *                   }
+ *       '422':
+ *         description: Not Process Error
+ *         content:
+ *           application/json:
+ *             examples:
+ *               Error:
+ *                 value: |
+ *                   {
+ *                     "message": "Nothing to delete students",
+ *                     "data": null
+ *                   }
+ *       '500':
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             examples:
  *               Error:
  *                 value: |
  *                   {
@@ -247,13 +265,18 @@ export async function DELETE(req: Request) {
     const isForceDelete = data?.['is_force_delete'] || false
 
     if (ids.length === 0) {
-      return Response.json({
-        message: 'Nothing to delete students',
-        data: null,
-      })
+      return Response.json(
+        {
+          message: 'Nothing to delete students',
+          data: null,
+        },
+        {
+          status: 422,
+        }
+      )
     }
 
-    let count = 0
+    let count: number
     if (isForceDelete) {
       const row = await prisma.student.deleteMany({
         where: {
@@ -277,14 +300,168 @@ export async function DELETE(req: Request) {
       count = row.count
     }
 
-    return Response.json({
-      message: `Success delete ${count} students`,
-      data: null,
-    })
+    return Response.json(
+      {
+        message: `Success delete ${count} students`,
+        data: null,
+      },
+      {
+        status: 200,
+      }
+    )
   } catch {
-    return Response.json({
-      message: 'Failed to delete students',
-      data: null,
+    return Response.json(
+      {
+        message: 'Failed to delete students',
+        data: null,
+      },
+      {
+        status: 500,
+      }
+    )
+  }
+}
+
+/**
+ * @swagger
+ * /api/student:
+ *   post:
+ *     tags:
+ *       - Student
+ *     operationId: createStudent
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               student_id:
+ *                   type: string
+ *               name:
+ *                   type: string
+ *               phone:
+ *                   type: string
+ *               address:
+ *                   type: string
+ *               university_id:
+ *                   type: string
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             examples:
+ *               Success:
+ *                 value: |
+ *                   {
+ *                     "message": "Success create student",
+ *                     "data": null
+ *                   }
+ *       '400':
+ *         description: Bad Request Error
+ *         content:
+ *           application/json:
+ *             examples:
+ *               Error:
+ *                 value: |
+ *                   {
+ *                     "message": "Name is invalid",
+ *                     "data": null
+ *                   }
+ *       '422':
+ *         description: Not Process Error
+ *         content:
+ *           application/json:
+ *             examples:
+ *               Error:
+ *                 value: |
+ *                   {
+ *                     "message": "University not found",
+ *                     "data": null
+ *                   }
+ *       '500':
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             examples:
+ *               Error:
+ *                 value: |
+ *                   {
+ *                     "message": "Failed to create student",
+ *                     "data": null
+ *                   }
+ */
+export async function POST(req: Request) {
+  try {
+    const data = await req.json()
+    const studentSchema = z.object({
+      student_id: z.string().min(6).max(16),
+      name: z.string().min(3).max(64),
+      phone: z.string().min(10).max(16),
+      address: z.string().min(1).max(255),
+      university_id: z.string().uuid(),
     })
+
+    const validate = studentSchema.safeParse(data)
+    if (!validate.success) {
+      return Response.json(
+        {
+          message: validate.error.message,
+          data: null,
+        },
+        {
+          status: 400,
+        }
+      )
+    }
+
+    const { student_id, phone, name, address, university_id } = data
+    const isFound = await prisma.university.findUnique({
+      where: {
+        uuid: university_id,
+      },
+    })
+
+    if (!isFound?.uuid) {
+      return Response.json(
+        {
+          message: 'University not found',
+          data: null,
+        },
+        {
+          status: 422,
+        }
+      )
+    }
+
+    await prisma.student.create({
+      data: {
+        student_id,
+        name,
+        address,
+        phone,
+        university_id,
+      },
+    })
+
+    return Response.json(
+      {
+        message: 'Success create student',
+        data: null,
+      },
+      {
+        status: 200,
+      }
+    )
+  } catch {
+    return Response.json(
+      {
+        message: 'Failed to create student',
+        data: null,
+      },
+      {
+        status: 500,
+      }
+    )
   }
 }

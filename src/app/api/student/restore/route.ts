@@ -30,6 +30,22 @@ import { filterValidUUIDs } from '@/lib/utils'
  *                     "message": "Success restore {number} students",
  *                     "data": null
  *                   }
+ *       '422':
+ *         description: Not Process Error
+ *         content:
+ *           application/json:
+ *             examples:
+ *               Error:
+ *                 value: |
+ *                   {
+ *                     "message": "Nothing to restore students",
+ *                     "data": null
+ *                   }
+ *       '500':
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             examples:
  *               Error:
  *                 value: |
  *                   {
@@ -43,10 +59,15 @@ export async function POST(req: Request) {
     const ids = filterValidUUIDs(data?.['ids'] || [])
 
     if (ids.length === 0) {
-      return Response.json({
-        message: 'Nothing to restore students',
-        data: null,
-      })
+      return Response.json(
+        {
+          message: 'Nothing to restore students',
+          data: null,
+        },
+        {
+          status: 400,
+        }
+      )
     }
 
     const row = await prisma.student.updateMany({
@@ -61,14 +82,24 @@ export async function POST(req: Request) {
     })
 
     const count = row.count
-    return Response.json({
-      message: `Success restore ${count} students`,
-      data: null,
-    })
+    return Response.json(
+      {
+        message: `Success restore ${count} students`,
+        data: null,
+      },
+      {
+        status: 200,
+      }
+    )
   } catch {
-    return Response.json({
-      message: 'Failed to restore students',
-      data: null,
-    })
+    return Response.json(
+      {
+        message: 'Failed to restore students',
+        data: null,
+      },
+      {
+        status: 500,
+      }
+    )
   }
 }
