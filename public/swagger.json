@@ -41,6 +41,101 @@
         }
       }
     },
+    "/api/student/{uuid}": {
+      "put": {
+        "tags": [
+          "Student"
+        ],
+        "operationId": "createStudent",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "example": "0a87fa79-c462-481b-898f-de5cf7905e0e",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "student_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "university_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Success": {
+                    "value": "{\n  \"message\": \"Success update student\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"Name is invalid\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Not Process Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"University not found\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Error": {
+                    "value": "{\n  \"message\": \"Failed to update student\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/student/restore": {
       "post": {
         "tags": [

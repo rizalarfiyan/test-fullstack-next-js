@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/Button'
 import { LIMIT_PERPAGE_DEFAULT, LIST_LIMIT_PERPAGE } from '@/constants'
 import useFetch from '@/hooks/useFetch'
 import { ChevronDown, Eye, FileBarChart, Filter, PlusCircle, Recycle, Trash } from 'lucide-react'
