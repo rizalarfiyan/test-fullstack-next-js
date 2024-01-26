@@ -53,7 +53,7 @@ const FormFilter: React.FC<FormFilterProps> = ({ onFilterChange }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant='outline' leftIcon={<Filter className='mr-2' />}>
+        <Button variant='outline' leftIcon={<Filter className='mr-2' />} className='rounded-r-md rounded-l-none'>
           Filter
         </Button>
       </DialogTrigger>

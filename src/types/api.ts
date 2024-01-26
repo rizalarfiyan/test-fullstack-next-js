@@ -40,7 +40,7 @@ export type ErrorResponse<V, E = BaseError<V>> = {
   error: E
 }
 
-export type BaseResponse<V, E> = Promise<SuccessResponse<V> | ErrorResponse<V, E>>
+export type BaseResponse<V = null, E = null> = Promise<SuccessResponse<V> | ErrorResponse<V, E>>
 
 export type ExtractFnReturnType<FnType extends (...args: any) => any> = Awaited<ReturnType<FnType>>
 

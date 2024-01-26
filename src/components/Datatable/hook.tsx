@@ -19,7 +19,6 @@ const useDataTable = (props: DataTableProps) => {
     query,
     defaultSort,
     hasSelection = false,
-    onSelectionChange,
   } = props
   const [rowSelection, setRowSelection] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
@@ -120,7 +119,22 @@ const useDataTable = (props: DataTableProps) => {
     update: () => {
       refetch()
     },
+    resetSelection: () => {
+      setRowSelection({})
+    },
   }))
+
+  const selectedData = useMemo(() => {
+    const newData = []
+    for (let index in rowSelection) {
+      const idx = parseInt(index)
+      if (isNaN(idx) || !memoizedData[idx]) {
+        continue
+      }
+      newData.push(memoizedData[idx])
+    }
+    return newData
+  }, [memoizedData, rowSelection])
 
   const status: DataTableStatus = useMemo(() => {
     if (isError) {
@@ -157,6 +171,8 @@ const useDataTable = (props: DataTableProps) => {
     perPage,
     onPageChange,
     table,
+    selectedData,
+    data: data?.data,
   }
 }
 

@@ -1,17 +1,13 @@
 'use client'
 
-import { Column, Table, flexRender } from '@tanstack/react-table'
+import { Table, flexRender } from '@tanstack/react-table'
 import { ArrowDownAZ, ArrowDownUp, ArrowUpZA } from 'lucide-react'
-
 import useDataTable from './hook'
-// import Pagination from '../Pagination'
-
 import { BaseApiResponse, BaseError, BaseResponse, BaseResponseList, QueryParams, QuerySorting } from '@/types/api'
 import { ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { Ref } from 'react'
-import { DataTableView } from '.'
-import { table } from 'console'
+import { Pagination } from '../Pagination'
 
 export interface DataTableProps {
   tableRef?: Ref<DataTableHandle> | null
@@ -26,12 +22,12 @@ export interface DataTableProps {
   actions?: (idx: string, row: any) => React.ReactNode
   rowClassName?: (row: any) => string
   hasSelection?: boolean
-  onSelectionChange?: (selection: any[]) => void
-  buttonActions?: (table: Table<any>) => React.ReactNode
+  buttonActions?: (table: Table<any>, selectedData: any[], data: any) => React.ReactNode
 }
 
 export interface DataTableHandle {
   update: () => void
+  resetSelection: () => void
 }
 
 export type DataTableColumn = ColumnDef<any>[]
@@ -39,12 +35,22 @@ export type DataTableColumn = ColumnDef<any>[]
 export type DataTableStatus = { icon: React.ReactNode; message: string } | null | undefined
 
 export const DataTable = (props: DataTableProps) => {
-  const { table, getHeaderGroups, getRowModel, status, currentPage, pageCount, perPage, onPageChange } =
-    useDataTable(props)
+  const {
+    table,
+    getHeaderGroups,
+    getRowModel,
+    status,
+    currentPage,
+    pageCount,
+    perPage,
+    onPageChange,
+    selectedData,
+    data,
+  } = useDataTable(props)
 
   return (
     <>
-      {props.buttonActions?.(table)}
+      {props.buttonActions?.(table, selectedData, data)}
       <div className={cn('relative flex min-h-[580px] flex-col overflow-hidden rounded-md bg-white', props.className)}>
         {status ? (
           <div className='flex min-h-[580px] w-full flex-col items-center justify-center text-stone-500'>
@@ -114,13 +120,13 @@ export const DataTable = (props: DataTableProps) => {
               <b>{pageCount}</b> entries
             </div>
             <nav aria-label='Pagination' className='mt-4 md:m-0'>
-              {/* <Pagination
-              className='pagination'
-              currentPage={currentPage}
-              totalCount={pageCount}
-              pageSize={perPage}
-              onPageChange={onPageChange}
-            /> */}
+              <Pagination
+                className='pagination'
+                currentPage={currentPage}
+                totalCount={pageCount}
+                pageSize={perPage}
+                onPageChange={onPageChange}
+              />
             </nav>
           </div>
         )}
