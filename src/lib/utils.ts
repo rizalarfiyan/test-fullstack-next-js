@@ -48,3 +48,8 @@ export function filterValidUUIDs(arr: string[]): string[] {
   }
   return uniqueIDs
 }
+
+export function stringUndefined(value?: string): string | undefined {
+  if (!value || value.trim() === '') return undefined
+  return value
+}

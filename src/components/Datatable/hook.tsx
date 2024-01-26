@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { Box } from 'lucide-react'
 import { useCallback, useImperativeHandle, useMemo, useState } from 'react'
-
+import { Box } from 'lucide-react'
+import { DataTableProps, DataTableStatus } from './DataTable'
 import useDebounce from '@/hooks/useDebounce'
-
-import { DataTableProps, DataTableStatus } from './DataTable.types'
-import Spinner from '../Spinner'
+import Spinner from '@/components/Spinner'
+import Checkbox from '@/components/Checkbox'
 
 const useDataTable = (props: DataTableProps) => {
   const {
@@ -16,20 +15,21 @@ const useDataTable = (props: DataTableProps) => {
     keyId = 'id',
     perPage = 10,
     debounceSorting = 400,
-    hasAutoNumber = false,
     actions,
     query,
     defaultSort,
+    hasSelection = false,
+    onSelectionChange,
   } = props
-
+  const [rowSelection, setRowSelection] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
   const [sorting, setSorting] = useState<SortingState>([])
 
   const sortingCallback = useCallback(() => {
     if (sorting.length < 1) return {}
     return {
-      order: sorting[0].desc ? 'desc' : 'asc',
-      order_by: sorting[0].id,
+      sort_by: sorting[0].desc ? 'desc' : 'asc',
+      sort_order: sorting[0].id,
     }
   }, [sorting])
 
@@ -50,30 +50,32 @@ const useDataTable = (props: DataTableProps) => {
     queryFn: () => apiController(condition),
   })
 
-  useImperativeHandle(tableRef, () => ({
-    update: () => {
-      refetch()
-    },
-  }))
-
   const memoizedData = useMemo(() => {
-    const getData = data?.data.content || []
-    if (!hasAutoNumber) return getData
-    return getData.map((val, idx) => ({
-      ...val,
-      ...(hasAutoNumber && {
-        autoNumber: idx + 1 + (currentPage - 1) * perPage,
-      }),
-    }))
-  }, [data, currentPage, perPage, hasAutoNumber])
+    return data?.data?.content || []
+  }, [data])
 
   const memoizedColumns = useMemo(
     () => [
-      ...(hasAutoNumber
+      ...(hasSelection
         ? [
             {
-              accessorKey: 'autoNumber',
-              header: 'No',
+              id: 'select',
+              header: ({ table }: any) => (
+                <Checkbox
+                  checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+                  onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                  aria-label='Select all'
+                />
+              ),
+              cell: ({ row }: any) => (
+                <Checkbox
+                  checked={row.getIsSelected()}
+                  onCheckedChange={(value) => row.toggleSelected(!!value)}
+                  aria-label='Select row'
+                />
+              ),
+              enableSorting: false,
+              enableHiding: false,
             },
           ]
         : []),
@@ -82,7 +84,6 @@ const useDataTable = (props: DataTableProps) => {
         ? [
             {
               header: 'Action',
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               cell: (value: any) => {
                 const idx = value?.row?.original?.[keyId] || ''
                 return actions?.(idx, value?.row?.original)
@@ -91,15 +92,16 @@ const useDataTable = (props: DataTableProps) => {
           ]
         : []),
     ],
-    [columns, hasAutoNumber, actions, keyId]
+    [hasSelection, columns, actions, keyId]
   )
 
-  const pageCount = data?.data?.metadata?.total || 0
-  const { getHeaderGroups, getRowModel } = useReactTable({
+  const pageCount: number = data?.data?.metadata?.total?.data || 0
+  const table = useReactTable({
     data: memoizedData,
     columns: memoizedColumns,
     state: {
       sorting,
+      rowSelection,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -107,10 +109,18 @@ const useDataTable = (props: DataTableProps) => {
     defaultColumn: {
       enableSorting: false,
     },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
     manualPagination: true,
     pageCount,
     manualSorting: true,
   })
+
+  useImperativeHandle(tableRef, () => ({
+    update: () => {
+      refetch()
+    },
+  }))
 
   const status: DataTableStatus = useMemo(() => {
     if (isError) {
@@ -140,12 +150,13 @@ const useDataTable = (props: DataTableProps) => {
 
   return {
     status,
-    getHeaderGroups,
-    getRowModel,
+    getHeaderGroups: table.getHeaderGroups,
+    getRowModel: table.getRowModel,
     currentPage,
     pageCount,
     perPage,
     onPageChange,
+    table,
   }
 }
 

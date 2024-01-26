@@ -1,7 +1,7 @@
 import { DEFAULT_LIMIT, DEFAULT_PAGE, SORT_DIRECTION } from '@/constants'
 import prisma from '@/lib/prisma'
 import { filterValidUUIDs, queryBoolean, queryInArray, queryNumber, queryString } from '@/lib/utils'
-import { GetStudent } from '@/types/api/student'
+import { StudentResponse } from '@/types/api/student'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
@@ -106,6 +106,9 @@ import { z } from 'zod'
  *                   }
  */
 export async function GET(req: NextRequest) {
+  // TODO:
+  // - fix order
+  // - fix swagger
   const params = req.nextUrl.searchParams
   const page = queryNumber(DEFAULT_PAGE, params.get('page'))
   const limit = queryNumber(DEFAULT_LIMIT, params.get('limit'))
@@ -120,13 +123,14 @@ export async function GET(req: NextRequest) {
     const offset = (page - 1) * limit
 
     const where = {
-      ...(isDeleted ? { NOT: [{ deletedAt: null }] } : { AND: [{ deletedAt: null }] }),
-      ...(studentId || name || universityName
+      ...(isDeleted ? { NOT: [{ deletedAt: null }] } : {}),
+      ...(studentId || name || universityName || !isDeleted
         ? {
-            OR: [
+            AND: [
               ...(studentId ? [{ student_id: { contains: studentId } }] : []),
               ...(name ? [{ name: { contains: name } }] : []),
               ...(universityName ? [{ university: { name: { contains: universityName } } }] : []),
+              ...(!isDeleted ? [{ deletedAt: null }] : []),
             ],
           }
         : {}),
@@ -160,7 +164,7 @@ export async function GET(req: NextRequest) {
       },
     })
 
-    const mapStudents: GetStudent[] = students.map((student, index) => ({
+    const mapStudents: StudentResponse[] = students.map((student, index) => ({
       id: student.uuid,
       sequence: offset + index + 1,
       nim: student.student_id,
@@ -171,14 +175,16 @@ export async function GET(req: NextRequest) {
     return Response.json(
       {
         message: 'Success get all students',
-        data: mapStudents,
-        pagination: {
-          limit,
-          page: Number(page),
-          total: {
-            data: totalData,
-            page: Math.ceil(totalData / Number(limit)),
-            deleted: totalDeleted,
+        data: {
+          content: mapStudents,
+          metadata: {
+            limit,
+            page: Number(page),
+            total: {
+              data: totalData,
+              page: Math.ceil(totalData / Number(limit)),
+              deleted: totalDeleted,
+            },
           },
         },
       },

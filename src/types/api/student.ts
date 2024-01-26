@@ -1,4 +1,4 @@
-export type GetStudent = {
+export type StudentResponse = {
   id: string
   sequence: number
   nim: string
