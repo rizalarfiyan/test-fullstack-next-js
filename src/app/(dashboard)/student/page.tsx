@@ -3,13 +3,14 @@
 import { Button } from '@/components/Button'
 import { LIMIT_PERPAGE_DEFAULT, LIST_LIMIT_PERPAGE } from '@/constants'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
-import { AlertCircle, ChevronDown, Eye, FileBarChart, PlusCircle, Recycle, RotateCcw, Trash2 } from 'lucide-react'
+import { ChevronDown, Eye, FileBarChart, PlusCircle, Recycle, RotateCcw, Trash2 } from 'lucide-react'
 import React, { useRef, useState } from 'react'
 import DataTable, { DataTableColumn, DataTableHandle, DataTableView } from '@/components/Datatable'
 import { getAll } from '@/service/student'
 import FormFilter from './FormFilter'
 import DeleteConfirmation from './DeleteConfirmation'
 import RestoreConfirmation from './RestoreConfirmation'
+import ExportData from './ExportData'
 
 const columns: DataTableColumn = [
   {
@@ -56,7 +57,7 @@ export default function Student() {
   }
 
   return (
-    <div className='m-10 p-5 rounded-md bg-white flex flex-col gap-6 w-full'>
+    <div className='p-5 rounded-md bg-white flex flex-col gap-6 w-full'>
       <DataTable
         tableRef={tableRef}
         columns={columns}
@@ -113,14 +114,20 @@ export default function Student() {
                       Bulk Delete
                     </Button>
                   </DeleteConfirmation>
-                  <Button
-                    variant='outline'
-                    leftIcon={<FileBarChart className='mr-2' />}
-                    rightIcon={<ChevronDown className='ml-2' />}
-                    rounded='none'
+                  <ExportData
+                    data={selectedData}
+                    header={['ID', 'No', 'NIM', 'Name', 'University Name']}
+                    keys={['id', 'sequence', 'nim', 'name', 'university_name']}
                   >
-                    Export
-                  </Button>
+                    <Button
+                      variant='outline'
+                      leftIcon={<FileBarChart className='mr-2' />}
+                      rightIcon={<ChevronDown className='ml-2' />}
+                      rounded='none'
+                    >
+                      Export
+                    </Button>
+                  </ExportData>
                   <DataTableView table={table}>
                     <Button
                       variant='outline'

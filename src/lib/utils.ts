@@ -1,3 +1,4 @@
+import { Column, Table } from '@tanstack/react-table'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { validate } from 'uuid'
@@ -52,4 +53,22 @@ export function filterValidUUIDs(arr: string[]): string[] {
 export function stringUndefined(value?: string): string | undefined {
   if (!value || value.trim() === '') return undefined
   return value
+}
+
+export function getAvailableColumn(table?: Table<any>): Column<any, unknown>[] {
+  return (
+    table?.getAllColumns().filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide()) || []
+  )
+}
+
+export function downloadFile(blob: Blob, fileName: string, extension: string) {
+  const link = document.createElement('a')
+  link.href = window.URL.createObjectURL(blob)
+  link.download = getFileName(fileName, extension)
+  link.click()
+  window.URL.revokeObjectURL(link.href)
+}
+
+export function getFileName(fileName: string, extension: string) {
+  return `${fileName}-${+new Date()}.${extension}`
 }

@@ -23,6 +23,7 @@ const useDataTable = (props: DataTableProps) => {
   const [rowSelection, setRowSelection] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
   const [sorting, setSorting] = useState<SortingState>([])
+  const [prevQuery, setPrevQuery] = useState<any>(null)
 
   const sortingCallback = useCallback(() => {
     if (sorting.length < 1) return {}
@@ -35,6 +36,11 @@ const useDataTable = (props: DataTableProps) => {
   const sortingValue = useDebounce(sortingCallback, debounceSorting)
 
   const condition = useMemo(() => {
+    if (query !== prevQuery) {
+      setCurrentPage(1)
+      setPrevQuery(query)
+    }
+
     return {
       page: currentPage,
       limit: perPage,
@@ -42,6 +48,7 @@ const useDataTable = (props: DataTableProps) => {
       ...defaultSort,
       ...sortingValue,
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, perPage, query, defaultSort, sortingValue])
 
   const { data, isFetching, isError, error, refetch, isLoading } = useQuery({

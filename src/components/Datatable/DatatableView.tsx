@@ -5,8 +5,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/DropdownMenu'
+import { getAvailableColumn } from '@/lib/utils'
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { Column, Table } from '@tanstack/react-table'
+import { Table } from '@tanstack/react-table'
 import { useMemo } from 'react'
 
 interface DataTableViewProps {
@@ -16,9 +17,7 @@ interface DataTableViewProps {
 
 export function DataTableView({ table, children }: DataTableViewProps) {
   const column = useMemo(() => {
-    return (
-      table?.getAllColumns().filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide()) || []
-    )
+    return getAvailableColumn(table)
   }, [table])
 
   return (
