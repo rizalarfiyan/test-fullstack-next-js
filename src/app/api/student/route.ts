@@ -1,6 +1,7 @@
 import { DEFAULT_LIMIT, DEFAULT_PAGE, SORT_DIRECTION } from '@/constants'
 import prisma from '@/lib/prisma'
 import { filterValidUUIDs, queryBoolean, queryInArray, queryNumber, queryString } from '@/lib/utils'
+import { QueryOrder } from '@/types/api'
 import { StudentResponse } from '@/types/api/student'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
@@ -37,7 +38,8 @@ import { z } from 'zod'
  *         schema:
  *           type: string
  *           enum:
- *             - student_id
+ *             - sequence
+ *             - nim
  *             - name
  *             - university_name
  *       - name: student_id
@@ -70,22 +72,24 @@ import { z } from 'zod'
  *                 value: |
  *                   {
  *                     "message": "Success get all students",
- *                     "data": [
- *                       {
- *                         "id": "8be9dea9-589f-42ee-b2cb-74deadbb6029",
- *                         "sequence": 1,
- *                         "nim": "22.11.5227",
- *                         "name": "Muhamad Rizal Arfiyan",
- *                         "university_name": "Universitas Amikom Yogyakarta"
- *                       }
- *                     ],
- *                     "pagination": {
- *                       "limit": 10,
- *                       "page": 1,
- *                       "total": {
- *                         "data": 1,
+ *                     "data": {
+ *                       "content": [
+ *                         {
+ *                           "id": "8be9dea9-589f-42ee-b2cb-74deadbb6029",
+ *                           "sequence": 1,
+ *                           "nim": "22.11.5227",
+ *                           "name": "Muhamad Rizal Arfiyan",
+ *                           "university_name": "Universitas Amikom Yogyakarta"
+ *                         }
+ *                       ],
+ *                       "metadata": {
+ *                         "limit": 10,
  *                         "page": 1,
- *                         "deleted": 0
+ *                         "total": {
+ *                           "data": 1,
+ *                           "page": 1,
+ *                           "delete": 0
+ *                         }
  *                       }
  *                     }
  *                   }
@@ -93,27 +97,26 @@ import { z } from 'zod'
  *                 value: |
  *                   {
  *                     "message": "Success get all students",
- *                     "data": [],
- *                     "pagination": {
- *                       "limit": 10,
- *                       "page": 1,
- *                       "total": {
- *                         "data": 0,
- *                         "page": 0,
- *                         "deleted": 0
+ *                     "data": {
+ *                       "content": [],
+ *                       "metadata": {
+ *                         "limit": 10,
+ *                         "page": 1,
+ *                         "total": {
+ *                           "data": 0,
+ *                           "page": 0,
+ *                           "delete": 0
+ *                         }
  *                       }
  *                     }
  *                   }
  */
 export async function GET(req: NextRequest) {
-  // TODO:
-  // - fix order
-  // - fix swagger
   const params = req.nextUrl.searchParams
   const page = queryNumber(DEFAULT_PAGE, params.get('page'))
   const limit = queryNumber(DEFAULT_LIMIT, params.get('limit'))
-  const sortBy = queryInArray(SORT_DIRECTION, params.get('sort_by'))
-  const sortOrder = queryInArray(['student_id', 'name', 'university_name'], params.get('sort_order'))
+  const sortBy = queryInArray(SORT_DIRECTION, params.get('sort_by')) as QueryOrder | null
+  const sortOrder = queryInArray(['sequence', 'nim', 'name', 'university_name'], params.get('sort_order'))
   const studentId = queryString(params.get('student_id'))
   const name = queryString(params.get('name'))
   const universityName = queryString(params.get('university_name'))
@@ -136,16 +139,26 @@ export async function GET(req: NextRequest) {
         : {}),
     }
 
+    const getSortData = () => {
+      if (!sortBy) return { createdAt: 'asc' as QueryOrder }
+      switch (sortOrder) {
+        case 'nim':
+          return { student_id: sortBy }
+        case 'name':
+          return { name: sortBy }
+        case 'university_name':
+          return { university: { name: sortBy } }
+        default:
+          return { createdAt: sortBy }
+      }
+    }
+
     const students = await prisma.student.findMany({
       skip: offset,
       take: limit,
-      ...(sortBy && sortOrder
-        ? {
-            orderBy: {
-              [sortBy]: sortOrder,
-            },
-          }
-        : {}),
+      orderBy: {
+        ...getSortData(),
+      },
       where,
       include: {
         university: true,

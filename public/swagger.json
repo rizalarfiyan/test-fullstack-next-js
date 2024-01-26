@@ -241,7 +241,8 @@
             "schema": {
               "type": "string",
               "enum": [
-                "student_id",
+                "sequence",
+                "nim",
                 "name",
                 "university_name"
               ]
@@ -287,10 +288,10 @@
               "application/json": {
                 "examples": {
                   "Success": {
-                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": [\n    {\n      \"id\": \"8be9dea9-589f-42ee-b2cb-74deadbb6029\",\n      \"sequence\": 1,\n      \"nim\": \"22.11.5227\",\n      \"name\": \"Muhamad Rizal Arfiyan\",\n      \"university_name\": \"Universitas Amikom Yogyakarta\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 10,\n    \"page\": 1,\n    \"total\": {\n      \"data\": 1,\n      \"page\": 1,\n      \"deleted\": 0\n    }\n  }\n}\n"
+                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": {\n    \"content\": [\n      {\n        \"id\": \"8be9dea9-589f-42ee-b2cb-74deadbb6029\",\n        \"sequence\": 1,\n        \"nim\": \"22.11.5227\",\n        \"name\": \"Muhamad Rizal Arfiyan\",\n        \"university_name\": \"Universitas Amikom Yogyakarta\"\n      }\n    ],\n    \"metadata\": {\n      \"limit\": 10,\n      \"page\": 1,\n      \"total\": {\n        \"data\": 1,\n        \"page\": 1,\n        \"delete\": 0\n      }\n    }\n  }\n}\n"
                   },
                   "Error": {
-                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": [],\n  \"pagination\": {\n    \"limit\": 10,\n    \"page\": 1,\n    \"total\": {\n      \"data\": 0,\n      \"page\": 0,\n      \"deleted\": 0\n    }\n  }\n}\n"
+                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": {\n    \"content\": [],\n    \"metadata\": {\n      \"limit\": 10,\n      \"page\": 1,\n      \"total\": {\n        \"data\": 0,\n        \"page\": 0,\n        \"delete\": 0\n      }\n    }\n  }\n}\n"
                   }
                 }
               }

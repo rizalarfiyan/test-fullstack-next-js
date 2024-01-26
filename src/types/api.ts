@@ -54,8 +54,10 @@ export type QueryParams<T = any> = {
   [key: string]: T
 }
 
+export type QueryOrder = 'asc' | 'desc'
+
 export type QuerySorting = {
-  order: 'asc' | 'desc'
+  order: QueryOrder
   order_by: string
 }
 
