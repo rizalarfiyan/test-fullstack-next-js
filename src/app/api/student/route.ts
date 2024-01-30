@@ -6,6 +6,8 @@ import { StudentResponse } from '@/types/api/student'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
+export const dynamic = 'force-static'
+
 /**
  * @swagger
  * /api/student:

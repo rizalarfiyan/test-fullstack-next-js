@@ -3,6 +3,8 @@ import { validate as uuidValidate } from 'uuid'
 import { z } from 'zod'
 import prisma from '@/lib/prisma'
 
+export const dynamic = 'force-static'
+
 /**
  * @swagger
  * /api/student/{uuid}:

@@ -4,6 +4,8 @@ import { queryNumber } from '@/lib/utils'
 import { faker } from '@faker-js/faker'
 import { NextRequest } from 'next/server'
 
+export const dynamic = 'force-static'
+
 /**
  * @swagger
  * /api/seeder:

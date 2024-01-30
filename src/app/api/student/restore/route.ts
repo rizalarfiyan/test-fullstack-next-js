@@ -1,6 +1,8 @@
 import prisma from '@/lib/prisma'
 import { filterValidUUIDs } from '@/lib/utils'
 
+export const dynamic = 'force-static'
+
 /**
  * @swagger
  * /api/student/restore:
