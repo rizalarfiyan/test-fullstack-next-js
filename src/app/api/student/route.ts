@@ -6,7 +6,7 @@ import { StudentResponse } from '@/types/api/student'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
-export const dynamic = 'force-static'
+export const dynamic = 'auto'
 
 /**
  * @swagger
@@ -126,6 +126,17 @@ export async function GET(req: NextRequest) {
   const name = queryString(params.get('name'))
   const universityName = queryString(params.get('university_name'))
   const isDeleted = queryBoolean(params.get('is_deleted'))
+
+  console.log({
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+    studentId,
+    name,
+    universityName,
+    isDeleted,
+  })
 
   try {
     const offset = (page - 1) * limit
