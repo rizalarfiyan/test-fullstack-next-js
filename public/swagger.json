@@ -288,7 +288,7 @@
               "application/json": {
                 "examples": {
                   "Success": {
-                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": {\n    \"content\": [\n      {\n        \"id\": \"8be9dea9-589f-42ee-b2cb-74deadbb6029\",\n        \"sequence\": 1,\n        \"nim\": \"22.11.5227\",\n        \"name\": \"Muhamad Rizal Arfiyan\",\n        \"university_name\": \"Universitas Amikom Yogyakarta\"\n      }\n    ],\n    \"metadata\": {\n      \"limit\": 10,\n      \"page\": 1,\n      \"total\": {\n        \"data\": 1,\n        \"page\": 1,\n        \"delete\": 0\n      }\n    }\n  }\n}\n"
+                    "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": {\n    \"content\": [\n      {\n        \"id\": \"8be9dea9-589f-42ee-b2cb-74deadbb6029\",\n        \"sequence\": 1,\n        \"nim\": \"22.11.5227\",\n        \"name\": \"Muhamad Rizal Arfiyan\",\n        \"phone\": \"08xxxxxxxxxxxx\",\n        \"address\": \"Jln. Pegangsaan Timur No. 56\",\n        \"university_id\": \"0ccd428a-b82c-47ca-abfc-0db6d7df5666\",\n        \"university_name\": \"Universitas Amikom Yogyakarta\"\n      }\n    ],\n    \"metadata\": {\n      \"limit\": 10,\n      \"page\": 1,\n      \"total\": {\n        \"data\": 1,\n        \"page\": 1,\n        \"delete\": 0\n      }\n    }\n  }\n}\n"
                   },
                   "Error": {
                     "value": "{\n  \"message\": \"Success get all students\",\n  \"data\": {\n    \"content\": [],\n    \"metadata\": {\n      \"limit\": 10,\n      \"page\": 1,\n      \"total\": {\n        \"data\": 0,\n        \"page\": 0,\n        \"delete\": 0\n      }\n    }\n  }\n}\n"
@@ -438,6 +438,59 @@
                 "examples": {
                   "Error": {
                     "value": "{\n  \"message\": \"Failed to create student\",\n  \"data\": null\n}\n"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/university": {
+      "get": {
+        "tags": [
+          "University"
+        ],
+        "operationId": "getAllUniversities",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "example": 1,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "example": 10,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Success": {
+                    "value": "{\n  \"message\": \"Success get all university\",\n  \"data\": {\n    \"content\": [\n      {\n        \"id\": \"8be9dea9-589f-42ee-b2cb-74deadbb6029\",\n        \"sequence\": 1,\n        \"nim\": \"22.11.5227\",\n        \"name\": \"Muhamad Rizal Arfiyan\",\n        \"university_name\": \"Universitas Amikom Yogyakarta\"\n      }\n    ],\n    \"metadata\": {\n      \"limit\": 10,\n      \"page\": 1,\n      \"total\": 0\n    }\n  }\n}\n"
+                  },
+                  "Error": {
+                    "value": "{\n  \"message\": \"Success get all university\",\n  \"data\": {\n    \"content\": [],\n    \"metadata\": {\n      \"limit\": 10,\n      \"page\": 1,\n      \"total\": 0\n    }\n  }\n}\n"
                   }
                 }
               }

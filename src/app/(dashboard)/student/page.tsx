@@ -3,7 +3,7 @@
 import { Button } from '@/components/Button'
 import { LIMIT_PERPAGE_DEFAULT, LIST_LIMIT_PERPAGE } from '@/constants'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/Select'
-import { ChevronDown, Eye, FileBarChart, PlusCircle, Recycle, RotateCcw, Trash2 } from 'lucide-react'
+import { ChevronDown, Eye, FileBarChart, Pencil, PlusCircle, Recycle, RotateCcw, Trash2 } from 'lucide-react'
 import React, { useRef, useState } from 'react'
 import DataTable, { DataTableColumn, DataTableHandle, DataTableView } from '@/components/Datatable'
 import { getAll } from '@/service/student'
@@ -11,6 +11,8 @@ import FormFilter from './FormFilter'
 import DeleteConfirmation from './DeleteConfirmation'
 import RestoreConfirmation from './RestoreConfirmation'
 import ExportData from './ExportData'
+import FormInput from './FormInput'
+import { StudentResponse } from '@/types/api/student'
 
 const columns: DataTableColumn = [
   {
@@ -66,9 +68,9 @@ export default function Student() {
         hasSelection
         buttonActions={(table, selectedData, data) => {
           return (
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <div className='flex items-center overflow-hidden rounded-md'>
+            <div className='flex items-center justify-between flex-col xl:flex-row gap-4'>
+              <div className='flex items-center gap-4 flex-col lg:flex-row lg:gap-2'>
+                <div className='flex items-center'>
                   <Button
                     variant={stateActive === StateActiveAction.ACTIVE ? 'solid' : 'outline'}
                     onClick={onButtonClickState(StateActiveAction.ACTIVE)}
@@ -85,32 +87,38 @@ export default function Student() {
                     Recycle Bin ({data?.metadata?.total?.deleted || 0})
                   </Button>
                 </div>
-                <div className='flex items-center overflow-hidden rounded-md'>
+                <div className='flex items-center justify-center flex-wrap gap-2 md:gap-0 md:flex-nowrap'>
                   {stateActive === StateActiveAction.RECYCLE_BIN ? (
                     <RestoreConfirmation tableRef={tableRef} data={selectedData}>
                       <Button
                         variant='outline'
                         leftIcon={<RotateCcw className='mr-2' />}
-                        className='rounded-l-md rounded-r-none'
+                        className='rounded-md md:rounded-l-md md:rounded-r-none'
                       >
                         Bulk Restore
                       </Button>
                     </RestoreConfirmation>
                   ) : (
-                    <Button
-                      variant='outline'
-                      leftIcon={<PlusCircle className='mr-2' />}
-                      className='rounded-l-md rounded-r-none'
-                    >
-                      Create
-                    </Button>
+                    <FormInput tableRef={tableRef}>
+                      <Button
+                        variant='outline'
+                        leftIcon={<PlusCircle className='mr-2' />}
+                        className='rounded-md md:rounded-l-md md:rounded-r-none'
+                      >
+                        Create
+                      </Button>
+                    </FormInput>
                   )}
                   <DeleteConfirmation
                     tableRef={tableRef}
                     data={selectedData}
                     isSoftDelete={stateActive === StateActiveAction.ACTIVE}
                   >
-                    <Button variant='outline' leftIcon={<Trash2 className='mr-2' />} rounded='none'>
+                    <Button
+                      variant='outline'
+                      leftIcon={<Trash2 className='mr-2' />}
+                      className='rounded-md md:rounded-none'
+                    >
                       Bulk Delete
                     </Button>
                   </DeleteConfirmation>
@@ -123,7 +131,7 @@ export default function Student() {
                       variant='outline'
                       leftIcon={<FileBarChart className='mr-2' />}
                       rightIcon={<ChevronDown className='ml-2' />}
-                      rounded='none'
+                      className='rounded-md md:rounded-none'
                     >
                       Export
                     </Button>
@@ -133,7 +141,7 @@ export default function Student() {
                       variant='outline'
                       leftIcon={<Eye className='mr-2' />}
                       rightIcon={<ChevronDown className='ml-2' />}
-                      rounded='none'
+                      className='rounded-md md:rounded-none'
                     >
                       Show
                     </Button>
@@ -165,7 +173,29 @@ export default function Student() {
           ...filter,
           is_deleted: stateActive === StateActiveAction.RECYCLE_BIN ? true : undefined,
         }}
-        actions={(idx, res: any) => <div>ok</div>}
+        actions={(idx, res: StudentResponse) => (
+          <div className='flex items-center gap-1.5'>
+            <FormInput isDetail uuid={idx} data={res} tableRef={tableRef}>
+              <Button variant='outline' size='smicon'>
+                <Eye className='w-5 h-5' />
+              </Button>
+            </FormInput>
+            <FormInput uuid={idx} data={res} tableRef={tableRef}>
+              <Button variant='outline' size='smicon'>
+                <Pencil className='w-5 h-5' />
+              </Button>
+            </FormInput>
+            <DeleteConfirmation
+              tableRef={tableRef}
+              data={[res]}
+              isSoftDelete={stateActive === StateActiveAction.ACTIVE}
+            >
+              <Button variant='outline' size='smicon'>
+                <Trash2 className='w-5 h-5' />
+              </Button>
+            </DeleteConfirmation>
+          </div>
+        )}
       />
     </div>
   )

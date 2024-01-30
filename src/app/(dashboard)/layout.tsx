@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
     <>
       <Header />
       <div>
-        <main className='px-10 pb-16 pt-28 w-full'>{children}</main>
+        <main className='px-2 lg:px-6 xl:px-10 pb-4 lg:pb-10 xl:pb-16 pt-20 lg:pt-24 xl:pt-28 w-full'>{children}</main>
       </div>
     </>
   )

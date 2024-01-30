@@ -18,8 +18,9 @@ import { restoreBatch } from '@/service/student'
 import { ErrorResponse } from '@/types/api'
 import { StudentResponse } from '@/types/api/student'
 import { useMutation } from '@tanstack/react-query'
-import { AlertCircle, RotateCcw, Trash2, XCircle } from 'lucide-react'
+import { AlertCircle, RotateCcw, XCircle } from 'lucide-react'
 import React from 'react'
+import { toast } from 'sonner'
 
 type RestoreConfirmationProps = {
   children: React.ReactNode
@@ -35,17 +36,18 @@ const RestoreConfirmation: React.FC<RestoreConfirmationProps> = ({ children, dat
       state.close()
       tableRef?.current?.update()
       tableRef?.current?.resetSelection()
+      toast.success(`${data?.length || ''} Student has been restored.`)
     },
     onError: (error: ErrorResponse<null>) => {
       state.close()
-      console.log(error.message)
+      toast.error(error.message)
     },
   })
 
-  const onClickButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     if (data?.length) {
-      api.mutate({
+      await api.mutateAsync({
         ids: data.map((item) => item.id),
       })
     }

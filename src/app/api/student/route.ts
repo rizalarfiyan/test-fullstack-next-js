@@ -79,6 +79,9 @@ import { z } from 'zod'
  *                           "sequence": 1,
  *                           "nim": "22.11.5227",
  *                           "name": "Muhamad Rizal Arfiyan",
+ *                           "phone": "08xxxxxxxxxxxx",
+ *                           "address": "Jln. Pegangsaan Timur No. 56",
+ *                           "university_id": "0ccd428a-b82c-47ca-abfc-0db6d7df5666",
  *                           "university_name": "Universitas Amikom Yogyakarta"
  *                         }
  *                       ],
@@ -182,6 +185,9 @@ export async function GET(req: NextRequest) {
       sequence: offset + index + 1,
       nim: student.student_id,
       name: student.name,
+      phone: student.phone,
+      address: student.address,
+      university_id: student.university.uuid,
       university_name: student.university.name,
     }))
 
@@ -213,7 +219,11 @@ export async function GET(req: NextRequest) {
         pagination: {
           limit,
           page,
-          total: 0,
+          total: {
+            data: 0,
+            page: 0,
+            deleted: 0,
+          },
         },
       },
       {

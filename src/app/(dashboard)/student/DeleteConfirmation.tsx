@@ -20,6 +20,7 @@ import { StudentResponse } from '@/types/api/student'
 import { useMutation } from '@tanstack/react-query'
 import { AlertCircle, Trash2, XCircle } from 'lucide-react'
 import React from 'react'
+import { toast } from 'sonner'
 
 type DeleteConfirmationProps = {
   children?: React.ReactNode
@@ -36,17 +37,20 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({ children, data,
       state.close()
       tableRef?.current?.update()
       tableRef?.current?.resetSelection()
+      toast.success(
+        `${data?.length || ''} Student has been ${isSoftDelete ? 'move to recycle bin' : 'permanently deleted'}.`
+      )
     },
     onError: (error: ErrorResponse<null>) => {
       state.close()
-      console.log(error.message)
+      toast.error(error.message)
     },
   })
 
-  const onClickButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickButton = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     if (data?.length) {
-      api.mutate({
+      await api.mutateAsync({
         ids: data.map((item) => item.id),
         is_force_delete: !isSoftDelete,
       })
@@ -62,7 +66,7 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({ children, data,
           <DialogTitle asChild>
             <div className='flex items-center gap-2 border-slate-200 pb-3 mb-2 border-b'>
               <AlertCircle className='mr-2' />
-              Delete confirmation
+              Delete {!isSoftDelete && 'permanent '}confirmation
             </div>
           </DialogTitle>
           {!isEmpty && (
@@ -89,7 +93,8 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({ children, data,
             <DialogDescription className='py-4 text-slate-700'>Please select your data row.</DialogDescription>
           ) : (
             <DialogDescription className='py-4 text-slate-700'>
-              Are you sure you want to delete {data?.length} record(s) above?
+              Are you sure you want to delete {!isSoftDelete && 'permanent? '}
+              {data?.length} record(s) above?
             </DialogDescription>
           )}
           <DialogFooter>
